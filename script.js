@@ -125,9 +125,17 @@ const translations = {
 const htmlElement = document.documentElement;
 const bodyElement = document.body;
 const languageSelect = document.querySelector('.language-select');
-const themeToggle = document.querySelector('.theme-toggle');
+const themeSwitchCheckbox = document.querySelector('.theme-switch__checkbox');
 const translatableNodes = document.querySelectorAll('[data-i18n]');
 const placeholderNodes = document.querySelectorAll('[data-i18n-placeholder]');
+
+function setThemeToggleLabel(themeName) {
+	const isDark = themeName === 'dark';
+	if (themeSwitchCheckbox) {
+		themeSwitchCheckbox.setAttribute('aria-label', isDark ? currentTranslation.themeButtonDark : currentTranslation.themeButtonLight);
+		themeSwitchCheckbox.checked = isDark;
+	}
+}
 
 function applyLanguage(languageCode) {
 	const translation = translations[languageCode] || translations.en;
@@ -150,17 +158,13 @@ function applyLanguage(languageCode) {
 	});
 
 	document.title = translation.title;
-	if (themeToggle) themeToggle.setAttribute('aria-label', bodyElement.dataset.theme === 'dark' ? translation.themeButtonDark : translation.themeButtonLight);
+	setThemeToggleLabel(bodyElement.dataset.theme || 'light');
 }
 
 function applyTheme(themeName) {
 	const isDark = themeName === 'dark';
 	bodyElement.dataset.theme = themeName;
-	if (themeToggle) {
-		themeToggle.setAttribute('aria-pressed', String(isDark));
-		themeToggle.textContent = isDark ? currentTranslation.themeButtonDark : currentTranslation.themeButtonLight;
-		themeToggle.setAttribute('aria-label', isDark ? currentTranslation.themeButtonDark : currentTranslation.themeButtonLight);
-	}
+	setThemeToggleLabel(themeName);
 	localStorage.setItem('welcome-theme', themeName);
 }
 
@@ -182,9 +186,9 @@ if (languageSelect) {
 	});
 }
 
-if (themeToggle) {
-	themeToggle.addEventListener('click', () => {
-		applyTheme(bodyElement.dataset.theme === 'dark' ? 'light' : 'dark');
+if (themeSwitchCheckbox) {
+	themeSwitchCheckbox.addEventListener('change', () => {
+		applyTheme(themeSwitchCheckbox.checked ? 'dark' : 'light');
 	});
 }
 
