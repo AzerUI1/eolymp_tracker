@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
 
+"""
+Checks if an e-olymp user exists by analyzing the profile page response.
+"""
+
 import requests
 
 
-def get_link_from_file(file_path: str) -> str:
-    with open(file_path, "r", encoding="utf-8") as file:
-        content: str = file.read()
-    return content.strip()
+username = input("Enter username: ").strip()
+url = "https://www.eolymp.com/en/users/" + username
 
+response = requests.get(url, timeout=1, stream=True)
 
-url: str = get_link_from_file("link.txt")
-
-user_input: str = input()
-
-url += user_input
-
-response = requests.get(url)
-html_code = response.text
-
-if "Unexpected Error" in html_code:
+if "Unexpected Error" in response.text:
     print("Not found")
 else:
     print("Found")
